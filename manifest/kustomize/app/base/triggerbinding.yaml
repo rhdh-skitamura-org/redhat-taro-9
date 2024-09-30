@@ -1,0 +1,17 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: redhat-taro-9-trigger-binding
+spec:
+  params:
+    - name: app-name
+      value: redhat-taro-9
+    - name: git-app-rev
+      #value: $(body.head_commit.id)
+      value: main
+    - name: git-app-url
+      value: 'https://github.com/rhdh-skitamura-org/redhat-taro-9'
+    - name: git-user
+      value: $(body.pusher.name)
+    - name: git-email
+      value: $(body.pusher.email)

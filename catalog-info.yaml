@@ -1,0 +1,32 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: redhat-taro-9
+  links:
+  - url: https://openshift-gitops-server-openshift-gitops.apps.rosa.rosa-hcp-1544.kfnj.p3.openshiftapps.com/applications/openshift-gitops/redhat-taro-9-app
+    title: ArgoCD
+    icon: dashboard
+  - url: https://redhat-taro-9-sc-demo-test-25.apps.rosa.rosa-hcp-1544.kfnj.p3.openshiftapps.com
+    title: Application
+    icon: dashboard
+  - url: https://github.com/rhdh-skitamura-org/redhat-taro-9
+    title: App Repository
+    icon: dashboard
+  annotations:
+    argocd/app-selector: argocd.argoproj.io/instance=redhat-taro-9
+    tektonci/build-namespace: sc-demo-test-25
+    backstage.io/kubernetes-id: redhat-taro-9
+    backstage.io/kubernetes-namespace: sc-demo-test-25
+    janus-idp.io/tekton-enabled : 'true'
+    janus-idp.io/tekton : redhat-taro-9
+    backstage.io/techdocs-ref: url:https://github.com/rhdh-skitamura-org/redhat-taro-9
+    github.com/project-slug: rhdh-skitamura-org/redhat-taro-9
+    quay.io/repository-slug: skitamura-quay-org/sc-demo-test-25/redhat-taro-9
+spec:
+  type: api 
+  system: "system:default/test-system-github"
+  lifecycle: production
+  owner: "group:rhdh-skitamura-org/skitamura-team"
+  git: github
+  git_host_url: github.com
+  git_owner_name: rhdh-skitamura-org

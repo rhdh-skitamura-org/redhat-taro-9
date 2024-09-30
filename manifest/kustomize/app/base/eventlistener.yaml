@@ -1,0 +1,22 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: redhat-taro-9-listener
+spec:
+  serviceAccountName: trigger-sa 
+  triggers:
+    - bindings:
+        - ref: redhat-taro-9-trigger-binding
+      template:
+        ref: redhat-taro-9-pipeline-template
+      interceptors:
+      - ref:
+          name: github
+          kind: ClusterInterceptor
+        params:
+        - name: "secretRef"
+          value:
+            secretName: webhooksecret
+            secretKey: webhook_secret
+        - name: "eventTypes"
+          value: ["push"]

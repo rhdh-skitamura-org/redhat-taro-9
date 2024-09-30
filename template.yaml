@@ -1,0 +1,119 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: summit-connect-app-template
+  title: Summit Connect デモアプリケーション
+  description: セキュリティの問題に回答してアプリをデプロイしてみよう！ 
+  tags:
+    - recommended
+spec:
+  owner: user:default/skitamura7446
+  type: service
+
+  parameters:
+    - title: Input
+      required:
+        - app_name
+        - answer_1
+        - answer_2
+      properties:
+        app_name:
+          title: あなたのニックネームを入力してください。
+          type: string
+          default: "redhat-taro"
+        answer_1:
+          title: 【問題１】コードの変更をローカル環境で頻繁にビルド・テストし、すばやくフィードバックを得る開発サイクルは？
+          type: string
+          enum:
+            - innerloop
+            - outerloop
+          enumNames:
+            - Inner Loop
+            - Outer Loop
+          ui:widget: radio
+        answer_2:
+          title: 【問題２】CI/CDパイプラインにおいて、コードがテスト環境や本番環境にデプロイされ、継続的にモニタリングとフィードバックが行われるプロセスは？
+          type: string
+          enum:
+            - innerloop
+            - outerloop
+          enumNames:
+            - Inner Loop
+            - Outer Loop
+          ui:widget: radio
+        namespace:
+          title: namespace
+          type: string
+          default: "sc-demo-test-7"
+      
+  steps:
+    - id: app-template
+      name: Generating the Application Source Code Component
+      action: fetch:template
+      input:
+        url: ./
+        copyWithoutTemplating:
+          - .github/workflows/
+        values:
+          namespace: 
+          git: "github"
+          git_host_url: "github.com"
+          git_owner_name: "rhdh-skitamura-org"
+          app_name: 
+          answer_1: 
+          answer_2: 
+          owner: "group:rhdh-skitamura-org/skitamura-team"
+          system: "system:default/test-system-github"
+          description: ""
+          cluster_url: "apps.rosa.rosa-hcp-1544.kfnj.p3.openshiftapps.com"
+          image_registry: "quay-registry-quay-quay.apps.rosa.rosa-hcp-1544.kfnj.p3.openshiftapps.com/skitamura-quay-org"
+        targetPath: ./tenant-app
+
+    - id: publish-app
+      name: Publish App Repository to GitHub
+      action: publish:github
+      input:
+        repoUrl: github.com?owner=rhdh-skitamura-org&repo=
+        repoVisibility: public
+        sourcePath: ./tenant-app
+        defaultBranch: main
+        protectDefaultBranch: false
+    
+    - id: register-to-github
+      name: Registering the Catalog Info Component to GitHub
+      action: catalog:register
+      input:
+        repoContentsUrl: 
+        catalogInfoPath: "/catalog-info.yaml"
+
+    - id: create-argocd-resources
+      name: Create ArgoCD Resources
+      action: argocd:create-resources
+      input:
+        appName: 
+        argoInstance: main
+        namespace: openshift-gitops
+        repoUrl: https://github.com/rhdh-skitamura-org/.git
+        path: 'manifest/argocd/'
+
+    - id: wait
+      name: Wait
+      action: debug:wait
+      input:
+        seconds: 20
+
+    - id: github-dispatch
+      name: GitHub Actions dispatch
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?repo=&owner=rhdh-skitamura-org
+        workflowId: initial-commit.yaml
+        branchOrTagName: main
+
+  output:
+    links:
+      - title: Open the Source Code Repository
+        url: 
+      - title: Open the Catalog Info Component
+        icon: catalog
+        entityRef: 

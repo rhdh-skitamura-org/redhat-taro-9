@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: redhat-taro-9
+  name: redhat-taro-9
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: redhat-taro-9
+    weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

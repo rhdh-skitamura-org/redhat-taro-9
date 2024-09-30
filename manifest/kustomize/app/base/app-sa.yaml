@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: redhat-taro-9-sa
+imagePullSecrets:
+  - name: quay-credentials  
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: redhat-taro-9-sa-admin
+subjects:
+- kind: ServiceAccount
+  name: redhat-taro-9-sa 
+  namespace: sc-demo-test-25
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
